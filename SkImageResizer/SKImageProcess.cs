@@ -69,7 +69,7 @@ namespace SkImageResizer
             }
         }
 
-        static void 我的非同步方法(string filePath, string destPath, double scale)
+        protected void 我的非同步方法(string filePath, string destPath, double scale)
         {
             var bitmap = SKBitmap.Decode(filePath);
             var imgPhoto = SKImage.FromBitmap(bitmap);
