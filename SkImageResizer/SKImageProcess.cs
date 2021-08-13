@@ -55,11 +55,17 @@ namespace SkImageResizer
             }
 
             await Task.Yield();
-            var allFiles = FindImages(sourcePath);
-
+            
             try
             {
-                var lt = allFiles.Select(s => Task.Run(() => 我的非同步方法(s, destPath, scale)));
+                var sPattern = new string[] { "*.png", "*.jpg", "*.jpeg" };
+                var lt = new List<Task>();
+
+                foreach (var item in sPattern)
+                {
+                    var allFiles = await FindImagesAsync(sourcePath, item);
+                    lt.AddRange(allFiles.Select(s => Task.Run(() => 我的非同步方法(s, destPath, scale))));                    
+                }
 
                 await Task.WhenAll(lt);
             }
@@ -123,6 +129,19 @@ namespace SkImageResizer
             files.AddRange(Directory.GetFiles(srcPath, "*.jpg", SearchOption.AllDirectories));
             files.AddRange(Directory.GetFiles(srcPath, "*.jpeg", SearchOption.AllDirectories));
             return files;
+        }
+
+        /// <summary>
+        /// 找出指定目錄下的圖片
+        /// </summary>
+        /// <param name="srcPath">圖片來源目錄路徑</param>
+        /// <returns></returns>
+        public Task<string[]> FindImagesAsync(string srcPath, string pattern)
+        {
+            return Task.Run(() =>
+            {
+                return Directory.GetFiles(srcPath, pattern, SearchOption.AllDirectories);
+            });
         }
     }
 }
